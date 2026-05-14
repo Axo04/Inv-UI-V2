@@ -1,8 +1,15 @@
 # Inv-UI-V2
-IN PROGRESS FILES WILL BE UPLOADED ONCE STABLE.
+- html and css and js included
+---
+- v1 also included
+---
+stable version out
+
 ---
 # info
-
+-
+---
+-
 built on HTML, CSS, and JS
 like V1..
 ---
