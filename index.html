@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Inventory UI</title>
+
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+background:  conic-gradient(#3c0e62, #4a082a, #3c0e62);
+    color: white;
+    font-family: Arial;
+}
+
+/* panel */
+.panel {
+    width: 1352px;
+    height: 490px;
+    background: #1a1a24;
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+}
+
+/* items */
+.items {
+  display: grid !important;
+  grid-template-columns: repeat(4, 70px) !important;
+  gap: 12px;
+
+  align-content: start !important; /* 🔥 KEY FIX */
+}
+
+.item {
+  width: 70px;
+  height: 70px;
+
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+    
+
+
+.item img {
+    width: 80%;
+    height: 80%;
+}
+
+/* info panel */
+.info-panel {
+    flex: 1;
+    background: #14141c;
+    border-radius: 15px;
+    padding: 15px;
+    height: 450px;
+
+    position: relative; /* ← THIS IS THE FIX */
+}
+
+.info-panel p {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#itemIcon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 60px;
+  
+}
+
+
+#particleContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.particle {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: floatUp 1.2s ease-out forwards;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-80px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+.item.selected {
+    border: 2px solid;
+}
+
+/* icons */
+.stat-icon {
+    width: 50px;
+    height: 50px;
+}
+
+/* labels */
+.label {
+    color: #aaa;
+}
+
+/* name */
+#name {
+    font-size: 22px;
+    font-weight: bold;
+    padding-right: 90px !important;
+}
+
+/* enchant box */
+.enchant-box {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.enchant-box select {
+    background: #2a2a3a;
+    color: white;
+    border: none;
+    padding: 6px;
+    border-radius: 6px;
+}
+
+.enchant-box button {
+    background: #3a3a55;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* enchant display */
+#enchantDisplay {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#enchantIcon {
+    width: 50px;
+    height: 50px;
+}
+#enchantDescBox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+#enchantDesc {
+    opacity: 0.8;
+    text-align: center;
+}
+
+#enchantTitle {
+    font-weight: bold;
+
+}
+.enchant-box {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center; /* 👈 centers it */
+    gap: 10px;
+}
+.weaponmaker-slot{
+    cursor:pointer;
+    transition:.2s;
+}
+
+.weaponmaker-slot:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 15px #00d9ff;
+}
+
+.weaponmaker-slot{
+    position:relative;
+}
+
+.corner-badge{
+    position:absolute;
+    top:6px;
+    right:6px;
+
+    width:18px;
+    height:18px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:11px;
+    border-radius:50%;
+
+    background:#111;
+    color:#00eaff;
+
+    box-shadow:
+        0 0 6px #00eaff,
+        0 0 12px #00eaff;
+
+    opacity:1;          /* always visible */
+    visibility:visible; /* always visible */
+    z-index:5;
+}
+
+.portal-panel{
+    margin-top:24px;
+    padding:18px;
+    border-radius:18px;
+    background:rgba(0,0,0,.22);
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.portal-panel h3{
+    margin:0 0 14px;
+    color:#fff;
+    text-shadow:0 0 10px #ff00ea;
+}
+
+.portal-grid{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+}
+
+.portal-card{
+    min-width:97px;
+    padding:14px;
+    border-radius:14px;
+    background:#252536;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.portal-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 0 14px #00eaff;
+}
+
+.portal-card img{
+    width:34px;
+    height:34px;
+    object-fit:contain;
+}
+
+.portal-icon{
+    font-size:28px;
+}
+
+.portal-card span:last-child{
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="panel">
+
+    <!-- ITEMS -->
+    <div class="items">
+        <div class="item" onclick="showItem('Flame Sword', 60, 'Magma', 150)">
+            <img src="flame.png">
+        </div>
+
+        <div class="item" onclick="showItem('Bow', 25, 'Common', 90)">
+            <img src="bow.png">
+        </div>
+
+        <div class="item" onclick="showItem('Axe', 40, 'Rare', 120)">
+            <img src="axe.png">
+        </div>
+
+        <div class="item" onclick="showItem('Fangs of Frost', 10, 'Epic', 50)">
+            <img src="fof.png">
+        </div>
+
+        <div class="item" onclick="showItem('Daggers', 30, 'Rare', 90)">
+            <img src="dagger.png">
+        </div>
+
+         <div class="item" onclick="showItem('Staff', 100, 'Terror', 200)">
+            <img src="staff.png">
+        </div>
+
+         <div class="item" onclick="showItem('Obsidian Claymore', 100, 'Void', 200)">
+            <img src="obsitian claymore.png">
+        </div>
+
+        <div class="item" onclick="showItem('Cursed Axe', 59, 'Unique', 200)">
+            <img src="cursedaxe.png">
+        </div>
+     <div class="item" onclick="showItem('Electric Hammer', 300, 'Electric', 344)">
+    <img src="electrichammer.png">
+</div>
+
+
+
+<div class="item" onclick="showItem('Weapon Maker Hammer', 50, 'Electric', 70)">
+    <img src="wmhammercut.png">
+</div>
+
+<div class="item" onclick="showItem('Void Shuriken', 150, 'Void', 300)">
+    <img src="vsurican.png">
+</div>
+
+<div class="item"
+     onclick="showItem('Winter\'s Touch', 300, 'Unique', 600)">
+    <img src="winterstouch.png">
+</div>
+
+</div>
+       
+    
+    <!-- INFO -->
+    <div class="info-panel">
+        <h2 id="name">Select Item</h2>
+<img id="itemIcon">
+<div id="particleContainer"></div>
+        <p>
+            <img class="stat-icon" src="damage.png">
+            <span class="label">Damage:</span>
+            <span id="damage"></span>
+        </p>
+
+        <p>
+            <img class="stat-icon" src="rarity.png">
+            <span class="label">Rarity:</span>
+            <span id="rarity"></span>
+        </p>
+
+        <p>
+            <img class="stat-icon" src="poweer.png">
+            <span class="label">Max LVL:</span>
+            <span id="max power lvl"></span>
+        </p>
+
+        <!-- ENCHANT DISPLAY -->
+        <div id="enchantDisplay">
+            <img id="enchantIcon" src="enchant.png">
+            <span id="enchantName"></span>
+        </div>
+        <p id="enchantDescBox">
+    <span id="enchantTitle"></span>
+    <span id="enchantDesc"></span>
+</p>
+
+
+
+        <!-- ENCHANT SELECT -->
+        <div class="enchant-box">
+            <select id="enchantSelect">
+                <option value="na">Select Enchant</option>
+                <option value="5">Frost (+5)</option>
+                <option value="1">+1</option>
+                <option value="10">Fire (+10)</option>
+                <option value="15">Shock (+15)</option>
+                <option value="loot">Loot+</option>
+                <option value="4">Exploding (+4)</option>
+            </select>
+
+            <button onclick="applyEnchant()">Apply</button>
+        </div>
+
+    </div>
+<div class="portal-panel">
+    <h3>Other Inventory UIs</h3>
+
+    <div class="portal-grid">
+        <div class="portal-card"
+             onclick="window.open('weaponmaker.html','_blank')">
+            <img src="wmfavicon.png">
+            <span>Weapon Maker</span>
+        </div>
+
+        <div class="portal-card"
+             onclick="window.open('armorui.html','_blank')">
+           <img src="armoruilogo.png">
+            <span>Armor UI</span>
+        </div>
+
+        <div class="portal-card"
+             onclick="window.open('artifactui.html','_blank')">
+            <span class="portal-icon">🔮</span>
+            <span>Artifact UI</span>
+        </div>
+
+        <div class="portal-card"
+             onclick="window.open('websitehub.html','_blank')">
+            <img src="favicon.png">
+            <span>Amethyst Hub</span>
+        </div>
+
+    </div>
+</div>
+</div>
+<script src="script.js"></script>
+
+
+</div>
+
+</body>
+</html>

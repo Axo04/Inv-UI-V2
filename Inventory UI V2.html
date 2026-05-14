@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Inventory UI V2</title>
+
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+background:  conic-gradient(#3c0e62, #4a082a, #3c0e62);
+    color: white;
+    font-family: Arial;
+}
+
+/* panel */
+.panel {
+   
+    width: 1352px;
+    height: 490px;
+    background: #1a1a24;
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+}
+
+/* items */
+.items {
+  display: grid !important;
+  grid-template-columns: repeat(4, 70px) !important;
+  gap: 12px;
+
+  align-content: start !important; /* 🔥 KEY FIX */
+}
+
+.item {
+  width: 70px;
+  height: 70px;
+
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+    
+#particleContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.particle {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: floatUp 1.2s ease-out forwards;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-80px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+.item.selected {
+    border: 2px solid;
+}
+
+.item img {
+    width: 80%;
+    height: 80%;
+}
+
+/* info panel */
+.info-panel {
+    flex: 1;
+    background: #14141c;
+    border-radius: 15px;
+    padding: 15px;
+    height: 450px;
+   width: 100px;
+
+    position: relative; /* ← THIS IS THE FIX */
+}
+
+.info-panel p {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+#itemIcon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 60px;
+  
+}
+.stat-icon {
+    width: 60px;
+    height: 60px;
+}
+
+/* labels */
+.label {
+    color: #aaa;
+}
+
+/* name */
+#name {
+    font-size: 22px;
+    font-weight: bold;
+    padding-right: 90px !important;
+}
+
+/* enchant box */
+.enchant-box {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.enchant-box select {
+    background: #2b071f;
+    color: rgb(255, 0, 93);
+    text-shadow: #a3148d 0 0 10px;
+    border: none;
+    padding: 6px;
+    border-radius: 6px;
+}
+
+.enchant-box button {
+   background: linear-gradient(135deg, #190a11, #29001e);
+    color: rgb(166, 0, 255);
+    text-shadow: #4d0e48 0 0 10px;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* enchant display */
+#enchantDisplay {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#enchantIcon {
+    width: 60px;
+    height: 60px;
+}
+#enchantDescBox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+#enchantDesc {
+    opacity: 0.8;
+    text-align: center;
+}
+
+#enchantTitle {
+    font-weight: bold;
+
+}
+
+#enchantdescbox-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    z-index: -1;
+}
+.enchant-box {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center; /* 👈 centers it */
+    gap: 10px;
+}
+
+.portal-panel{
+    margin-top:24px;
+    padding:18px;
+    border-radius:18px;
+    background:rgba(0,0,0,.22);
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.portal-panel h3{
+    margin:0 0 14px;
+    color:#fff;
+    text-shadow:0 0 10px #ff00ea;
+}
+
+.portal-grid{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+}
+
+.portal-card{
+    min-width:97px;
+    padding:14px;
+    border-radius:14px;
+    background:#252536;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.h3{
+    margin:0 0 14px;
+    color:#fff;
+    text-shadow:0 0 10px #ff00ea;
+    font-size:20px;
+    position: relative;
+}
+
+.portal-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 0 14px #00eaff;
+}
+
+.portal-card img{
+    width:34px;
+    height:34px;
+    object-fit:contain;
+}
+
+.portal-icon{
+    font-size:28px;
+}
+
+.portal-card span:last-child{
+    font-weight:bold;
+}
+
+.enchant-flash{
+    position:absolute;
+    top:0;
+    left:-120%;
+    width:120%;
+    height:100%;
+    pointer-events:none;
+    opacity:0;
+    z-index:20;
+}
+
+.enchant-flash.active{
+    animation:mcdFlash .45s ease-out;
+}
+
+@keyframes mcdFlash{
+    0%{
+        left:-120%;
+        opacity:0;
+    }
+
+    20%{
+        opacity:1;
+    }
+
+    100%{
+        left:120%;
+        opacity:0;
+    }
+}
+.ap-panel,
+.mp-panel{
+
+    position:absolute;
+
+    left:16px;
+
+    width:185px;
+    height:38px;
+
+    padding:8px 10px;
+
+    border-radius:12px;
+
+    z-index:30;
+
+    display:flex;
+    align-items:center;
+
+    background:rgba(43,23,56,.92);
+
+    overflow:hidden;
+    box-sizing:border-box;
+}
+
+/* AP */
+.ap-panel{
+
+    top:14px;
+
+    box-shadow:
+        0 0 10px #ff00ff,
+        0 0 18px #8400ff;
+}
+
+/* MP */
+.mp-panel{
+
+    top:62px;
+
+    box-shadow:
+        0 0 10px #00bbff,
+        0 0 18px #0066ff;
+}
+
+/* ICONS */
+.ap-icon,
+.mp-icon{
+
+    width:18px;
+    height:18px;
+
+    margin-right:8px;
+
+    flex-shrink:0;
+}
+
+/* LABELS */
+.amethyst-points-h3{
+
+    font-size:13px;
+    font-weight:bold;
+
+    margin:0;
+
+    white-space:nowrap;
+
+    color:#ff5cf8;
+
+    text-shadow:0 0 6px currentColor;
+}
+#apBalance,
+#mpBalance{
+
+    font-size:13px;
+    font-weight:bold;
+
+    margin-left:6px;
+}
+/* AP BALANCE */
+#apBalance{
+
+    font-size:16px;
+    font-weight:bold;
+
+    background:linear-gradient(
+        45deg,
+        #ff00ff,
+        #7a00ff
+    );
+
+    background-clip:text;
+    -webkit-background-clip:text;
+
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+}
+
+/* MP BALANCE */
+#mpBalance{
+
+    font-size:16px;
+    font-weight:bold;
+
+    background:linear-gradient(
+        45deg,
+        #00b7ff,
+        #004cff
+    );
+
+    background-clip:text;
+    -webkit-background-clip:text;
+
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+}
+
+.ap-popup{
+    position:absolute;
+
+    right:-10px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    color:#ff00ff;
+
+    font-weight:bold;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    text-shadow:
+        0 0 10px #ff00ff;
+
+    transition:
+        opacity .25s,
+        transform .4s;
+}
+
+.ap-popup.show{
+    opacity:1;
+
+    transform:
+        translateY(-50%)
+        translateX(20px);
+}
+
+.gain-ap-btn{
+    position: relative;
+    background: linear-gradient(135deg, #190a11, #29001e);
+    color: rgb(166, 0, 255);
+    text-shadow: #4d0e48 0 0 10px;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.gain-ap-panel{
+    position:relative;
+    background:linear-gradient(135deg, #000000, #680266); 
+    top:20px;
+    left:10px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    padding: 10px 18px;
+    border-radius: 6px;
+    box-shadow:0 0 20px #ff00ff;
+    height: 200px;
+}
+
+.mp-popup{
+    position:absolute;
+
+    right:-10px;
+    top:84%;
+
+    transform:translateY(-50%);
+
+    color:#1900ff;
+
+    font-weight:bold;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    text-shadow:
+        0 0 10px #00fffb;
+
+    transition:
+        opacity .25s,
+        transform .4s;
+}
+
+.mp-popup.show{
+    opacity:1;
+
+    transform:
+        translateY(-50%)
+        translateX(20px);
+}
+
+.minigames-btn{
+    position: relative;
+    background: linear-gradient(135deg, #000000, #004cff);
+    color: rgb(255, 0, 255);
+    text-shadow: #ff00ff 0 0 10px;
+    text-align: center;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;}
+</style>
+</head>
+<body>
+
+
+<div class="ap-panel">
+    <img class="ap-icon" src="tag-ap.png">
+
+    <div class="amethyst-points-h3">
+        AP Balance:
+    </div>
+
+    <span id="apBalance">0</span>
+
+    <div id="apPopup" class="ap-popup">
+        +50 AP
+    </div>
+</div>
+   <div class="mp-panel">
+    <img class="mp-icon" src="tag-mp.png">
+
+    <div class="amethyst-points-h3">
+        MP Balance:
+    </div>
+   
+    <span id="mpBalance">0</span>
+ <div id="mpPopup" class="mp-popup">
+        +50 MP
+    </div>
+</div>
+
+    
+
+<div class="panel">
+
+    <!-- ITEMS -->
+    <div class="items">
+        <div class="item" onclick="showItem('Flame Sword', 60, 'Magma', 150)">
+            <img src="flame.png">
+        </div>
+
+
+        <div class="item" onclick="showItem('Axe', 40, 'Rare', 120)">
+            <img src="axe.png">
+        </div>
+
+     
+        <div class="item" onclick="showItem('Daggers', 30, 'Rare', 90)">
+            <img src="dagger.png">
+        </div>
+
+         <div class="item" onclick="showItem('Staff of Terror', 100, 'Terror', 200)">
+            <img src="staff.png">
+        </div>
+
+
+        <div class="item" onclick="showItem('Cursed Axe', 59, 'Unique', 200)">
+            <img src="cursedaxe.png">
+        </div>
+     <div class="item" onclick="showItem('Electric Hammer V2', 300, 'Electric', 344)">
+    <img src="elechammerv2.png">
+</div>
+
+
+
+<div class="item"
+     onclick="showItem('Winter\'s Touch', 300, 'Unique', 600)">
+    <img src="winterstouch.png">
+</div>
+
+</div>
+       
+    
+    <!-- INFO -->
+    <div class="info-panel">
+        <div class="enchant-flash"></div>
+        <h2 id="name">Select Item</h2>
+<img id="itemIcon">
+<div id="particleContainer"></div>
+        <p>
+            <img class="stat-icon" src="damagev2.png">
+            <span class="label">Damage:</span>
+            <span id="damage"></span>
+        </p>
+
+        <p>
+            <img class="stat-icon" src="rarityv2.png">
+            <span class="label">Rarity:</span>
+            <span id="rarity"></span>
+        </p>
+
+        <p>
+            <img class="stat-icon" src="powerv2.png">
+            <span class="label">Max LVL:</span>
+            <span id="max power lvl"></span>
+        </p>
+
+        <!-- ENCHANT DISPLAY -->
+        <div id="enchantDisplay">
+            <img id="enchantIcon" src="enchantv2.png">
+            <span id="enchantName"></span>
+        </div>
+        
+        <p id="enchantDescBox">
+    <span id="enchantTitle"></span>
+    <span id="enchantDesc"></span>
+   
+</p>
+
+
+
+        <!-- ENCHANT SELECT -->
+        <div class="enchant-box">
+            <select id="enchantSelect">
+                <option value="na">Select Enchant</option>
+                <option value="5">Frost (+5)</option>
+                <option value="1">+1</option>
+                <option value="10">Fire (+10)</option>
+                <option value="15">Shock (+15)</option>
+                <option value="loot">Loot+</option>
+                <option value="4">Exploding (+4)</option>
+            </select>
+
+            <button onclick="applyEnchant()">Apply</button>
+        </div>
+
+    </div>
+   <div class="portal-panel">
+    <h3>Other Inventory UIs</h3>
+
+    <div class="portal-grid">
+        <div class="portal-card"
+             onclick="window.open('weaponmaker.html','_blank')">
+            <img src="wmfavicon.png">
+            <span>Weapon Maker</span>
+        </div>
+
+        <div class="portal-card"
+             onclick="window.open('index.html','_blank')">
+           <img src="v1arc64.png">
+            <span>V1 Version</span>
+        </div>
+
+    </div>
+
+    <script src="scriptv2.js"></script>
